@@ -15,20 +15,29 @@ namespace Doppler.Extensions.Logging
             configuration.ConfigureLoggly(hostEnvironment);
 
             loggerConfiguration
-                .WriteTo.Console()
                 .Enrich.WithProperty("Application", hostEnvironment.ApplicationName)
                 .Enrich.WithProperty("Environment", hostEnvironment.EnvironmentName)
                 .Enrich.WithProperty("Platform", Environment.OSVersion.Platform)
                 .Enrich.WithProperty("Runtime", Environment.Version)
                 .Enrich.WithProperty("OSVersion", Environment.OSVersion)
                 .Enrich.FromLogContext()
-                .ReadFrom.Configuration(configuration);
+                .WriteTo.Console();
 
-            if (!hostEnvironment.IsDevelopment())
+            if (hostEnvironment.IsDevelopment())
             {
                 loggerConfiguration
+                    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+                    .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Information)
+                    .MinimumLevel.Debug();
+            }
+            {
+                loggerConfiguration
+                    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                    .MinimumLevel.Information()
                     .WriteTo.Loggly();
             }
+
+            loggerConfiguration.ReadFrom.Configuration(configuration);
 
             return loggerConfiguration;
         }
