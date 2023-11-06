@@ -1,7 +1,6 @@
 ﻿using Doppler.Extensions.Logging;
 
 using Microsoft.Extensions.Configuration;
-
 using Microsoft.Extensions.Hosting;
 
 using Serilog;
