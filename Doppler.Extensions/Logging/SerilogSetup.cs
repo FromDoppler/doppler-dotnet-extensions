@@ -24,9 +24,17 @@ namespace Doppler.Extensions.Logging
                 .Enrich.FromLogContext()
                 .ReadFrom.Configuration(configuration);
 
-            if (!hostEnvironment.IsDevelopment())
+            if (hostEnvironment.IsDevelopment())
             {
                 loggerConfiguration
+                    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+                    .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Information)
+                    .MinimumLevel.Debug();
+            }
+            {
+                loggerConfiguration
+                    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                    .MinimumLevel.Information()
                     .WriteTo.Loggly();
             }
 
